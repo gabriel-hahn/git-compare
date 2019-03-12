@@ -20,7 +20,6 @@ export const Form = styled.form`
     background: #fff;
     border: 0;
     font-size: 18px;
-    color: #fff;
     border-radius: 3px;
   }
 
