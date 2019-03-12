@@ -16,6 +16,11 @@ export default class Main extends Component {
     repositories: [],
   };
 
+  componentDidMount() {
+    const repositories = localStorage.getItem('repositories');
+    this.setState({ repositories: repositories ? JSON.parse(repositories) : [] });
+  }
+
   handleAddRepository = async (e) => {
     e.preventDefault();
 
@@ -26,9 +31,15 @@ export default class Main extends Component {
 
       repository.lastCommit = moment(repository.pushed_at).fromNow();
 
+      // Merge repositories that already existis with the new repository found.
+      const repositoriesUpdated = [...this.state.repositories, repository];
+
+      // Set repositories to local storage
+      localStorage.setItem('repositories', JSON.stringify(repositoriesUpdated));
+
       this.setState({
         repositoryInput: '',
-        repositories: [...this.state.repositories, repository],
+        repositories: repositoriesUpdated,
         repositoryError: false,
       });
     } catch (err) {
