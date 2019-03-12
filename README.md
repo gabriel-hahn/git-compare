@@ -6,6 +6,8 @@ ReactJS project that 'compare' GitHub repositories :octocat:
     <img src="https://media.giphy.com/media/57UhZKjoZPZuogWflc/giphy.gif" alt="git-compare" />
 </p>
 
+This project uses GitHub API (https://api.github.com/repos/{user}/{repository})
+
 ## Getting Started
 
 To run this project, you should have [yarn](https://yarnpkg.com/en/) installed.
