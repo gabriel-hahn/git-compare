@@ -16,10 +16,37 @@ export default class Main extends Component {
     repositories: [],
   };
 
-  componentDidMount() {
-    const repositories = localStorage.getItem('repositories');
-    this.setState({ repositories: repositories ? JSON.parse(repositories) : [] });
+  async componentDidMount() {
+    this.setState({ loading: true });
+
+    const repositories = await localStorage.getItem('repositories');
+    this.setState({ repositories: repositories ? JSON.parse(repositories) : [], loading: false });
   }
+
+  updateRepo = async (pathRepo) => {
+    const repositoriesUpdated = await this.getRepositoryIncluded(pathRepo);
+    this.setRepoLocalStorage(repositoriesUpdated);
+  };
+
+  deleteRepo = async (repoId) => {
+    const repositories = await localStorage.getItem('repositories');
+    const repositoriesParsed = JSON.parse(repositories);
+    const newRepositoriesList = repositoriesParsed.filter(repo => repo.id !== repoId);
+    this.setRepoLocalStorage(newRepositoriesList);
+  };
+
+  setRepoLocalStorage = async (repo) => {
+    await localStorage.setItem('repositories', JSON.stringify(repo));
+    this.setState({ repositories: repo });
+  };
+
+  getRepositoryIncluded = async (repositoryInput) => {
+    const { data: repository } = await api.get(`repos/${repositoryInput}`);
+
+    repository.lastCommit = moment(repository.pushed_at).fromNow();
+
+    return repository;
+  };
 
   handleAddRepository = async (e) => {
     e.preventDefault();
@@ -27,19 +54,16 @@ export default class Main extends Component {
     this.setState({ loading: true });
 
     try {
-      const { data: repository } = await api.get(`repos/${this.state.repositoryInput}`);
-
-      repository.lastCommit = moment(repository.pushed_at).fromNow();
+      const repository = await this.getRepositoryIncluded(this.state.repositoryInput);
 
       // Merge repositories that already existis with the new repository found.
-      const repositoriesUpdated = [...this.state.repositories, repository];
+      const repositories = [...this.state.repositories, repository];
 
       // Set repositories to local storage
-      localStorage.setItem('repositories', JSON.stringify(repositoriesUpdated));
+      this.setRepoLocalStorage(repositories);
 
       this.setState({
         repositoryInput: '',
-        repositories: repositoriesUpdated,
         repositoryError: false,
       });
     } catch (err) {
@@ -65,7 +89,11 @@ export default class Main extends Component {
           </button>
         </Form>
 
-        <CompareList repositories={this.state.repositories} />
+        <CompareList
+          repositories={this.state.repositories}
+          updateRepo={this.updateRepo}
+          deleteRepo={this.deleteRepo}
+        />
       </Container>
     );
   }
