@@ -24,8 +24,17 @@ export default class Main extends Component {
   }
 
   updateRepo = async (pathRepo) => {
-    const repositoriesUpdated = await this.getRepositoryIncluded(pathRepo);
-    this.setRepoLocalStorage(repositoriesUpdated);
+    const repository = await this.getRepositoryIncluded(pathRepo);
+    const repositoriesUpdated = this.state.repositories.map((repo) => {
+      if (repo.id === repository.id) {
+        return repository;
+      }
+
+      return repo;
+    });
+
+    this.setState({ repositories: repositoriesUpdated });
+    await this.setRepoLocalStorage(repositoriesUpdated);
   };
 
   deleteRepo = async (repoId) => {
