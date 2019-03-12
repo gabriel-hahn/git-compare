@@ -21,7 +21,7 @@ yarn
 2 - Start the project (local host at 3000):
 
 ```
-npm run start
+yarn start
 ```
 
 ## Contributing
