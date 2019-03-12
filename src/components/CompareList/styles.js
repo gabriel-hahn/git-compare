@@ -17,6 +17,14 @@ export const Repository = styled.div`
   display: flex;
   flex-direction: column;
 
+  transform: scale(1);
+  transition: transform 1s;
+
+  &:hover {
+    transform: scale(1.03);
+    transition: transform 1s;
+  }
+
   header {
     padding: 30px;
     display: flex;
